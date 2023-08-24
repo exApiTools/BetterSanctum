@@ -74,6 +74,10 @@ public class BetterSanctumSettings : ISettings
 
     private static readonly IReadOnlyList<(string, string)> AfflictionTypes = new List<(string, string)>
     {
+        ("Corrosive Concoction", "No Resolve Mitigation, chance to Avoid Resolve loss or Resolve Aegis"),
+        ("Shattered Shield", "Cannot have Resolve Aegis"),
+        ("Sharpened Arrowhead", "Enemy Hits ignore your Resolve Mitigation"),
+        ("Iron Manacles", "Cannot Avoid Resolve Loss from Enemy Hits"),
         ("Accursed Prism", "When you gain an Affliction, gain an additional random Minor Affliction"),
         ("Poisoned Water", "Gain a random Minor Affliction when you use a Fountain"),
         ("Glass Shard", "The next Boon you gain is converted into a random Minor Affliction"),

@@ -174,10 +174,13 @@ public class BetterSanctumSettings : ISettings
                     ImGui.InputTextWithHint("##CurrencyFilter", "Filter", ref currencyFilter, 100);
                     foreach (var type in CurrencyTypes.Where(t => t.Contains(currencyFilter, StringComparison.InvariantCultureIgnoreCase)))
                     {
-                        var currentValue = GetCurrencyTier(type);
-                        if (ImGui.SliderInt(type, ref currentValue, 1, 3))
+                        for (int order = 0; order < 3; order++)
                         {
-                            profile.CurrencyTiers[type] = currentValue;
+                            var currentValue = GetCurrencyTier(type, order);
+                            if (ImGui.SliderInt($"{type} ({order switch { 0 => "first", 1 => "second", 2 => "third" }})", ref currentValue, 1, 5))
+                            {
+                                profile.CurrencyTiers[$"{type}/{order}"] = currentValue;
+                            }
                         }
                     }
 
@@ -243,9 +246,13 @@ public class BetterSanctumSettings : ISettings
         return GetCurrentProfile().profile.RoomTiers.GetValueOrDefault(type ?? "", 2);
     }
 
-    public int GetCurrencyTier(string type)
+    public int GetCurrencyTier(string type, int order)
     {
-        return GetCurrentProfile().profile.CurrencyTiers.GetValueOrDefault(type ?? "", 3);
+        var currencyTiers = GetCurrentProfile().profile.CurrencyTiers;
+        return currencyTiers.TryGetValue($"{type ?? ""}/{order}", out var tier) ||
+               currencyTiers.TryGetValue(type ?? "", out tier)
+            ? tier
+            : 3;
     }
 
     public int GetAfflictionTier(string type)
@@ -268,6 +275,8 @@ public class BetterSanctumSettings : ISettings
     public ColorNode Tier1CurrencyColor { get; set; } = new(Color.Violet);
     public ColorNode Tier2CurrencyColor { get; set; } = new(Color.Green);
     public ColorNode Tier3CurrencyColor { get; set; } = new(Color.White);
+    public ColorNode Tier4CurrencyColor { get; set; } = new(Color.Gray);
+    public ColorNode Tier5CurrencyColor { get; set; } = new(Color.Gray);
 
     public ColorNode Tier1AfflictionColor { get; set; } = new(Color.Green);
     public ColorNode Tier2AfflictionColor { get; set; } = new(Color.White);

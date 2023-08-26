@@ -56,7 +56,7 @@ public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
                 {
                     var room = roomLayer[roomIndex];
                     (List<int> CurrencyTier, int? RoomTier, int? AfflictionTier) thisRoomData = (
-                        room.Data.Rewards.Select(x => Settings.GetCurrencyTier(x.CurrencyName)).ToList(),
+                        room.GetRoomsWithOrder().Select(x => Settings.GetCurrencyTier(x.room.CurrencyName, x.order)).ToList(),
                         room.Data.RewardRoom?.RoomType?.Id switch
                         {
                             null => null,
@@ -172,14 +172,14 @@ public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
                 textSize = DrawTextWithBackground($"->{rewardRoomId ?? "??"}", lineLocation, GetRoomColor(rewardRoomId), Settings.BackgroundColor);
                 lineLocation.Y += textSize.Y;
 
-                if (room.Data.Rewards is { Count: > 0 } rewards)
+                if (room.GetRoomsWithOrder() is { Count: > 0 } rewards)
                 {
                     textSize = DrawTextWithBackground("\nRewards:", lineLocation, Settings.TextColor, Settings.BackgroundColor);
                     lineLocation.Y += textSize.Y;
                     foreach (var reward in rewards)
                     {
-                        var currencyName = reward.CurrencyName;
-                        textSize = DrawTextWithBackground(currencyName, lineLocation, GetCurrencyColor(currencyName), Settings.BackgroundColor);
+                        var currencyName = reward.room.CurrencyName;
+                        textSize = DrawTextWithBackground(currencyName, lineLocation, GetCurrencyColor(currencyName, reward.order), Settings.BackgroundColor);
                         lineLocation.Y += textSize.Y;
                     }
                 }
@@ -221,7 +221,7 @@ public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
     }
 
     private Color GetAfflictionColor(string effectName) => GetAfflictionColor(Settings.GetAfflictionTier(effectName));
-    private Color GetCurrencyColor(string currencyName) => GetCurrencyColor(Settings.GetCurrencyTier(currencyName));
+    private Color GetCurrencyColor(string currencyName, int order) => GetCurrencyColor(Settings.GetCurrencyTier(currencyName, order));
     private Color GetRoomColor(string fightRoomId) => GetRoomColor(Settings.GetRoomTier(fightRoomId));
 
     private ColorNode GetAfflictionColor(int afflictionTier)

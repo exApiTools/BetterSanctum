@@ -277,6 +277,7 @@ public class BetterSanctumSettings : ISettings
     public ColorNode Tier3CurrencyColor { get; set; } = new(Color.White);
     public ColorNode Tier4CurrencyColor { get; set; } = new(Color.Gray);
     public ColorNode Tier5CurrencyColor { get; set; } = new(Color.Gray);
+    public RangeNode<int> HideCurrencyBelowTier { get; set; } = new(5, 1, 5);
 
     public ColorNode Tier1AfflictionColor { get; set; } = new(Color.Green);
     public ColorNode Tier2AfflictionColor { get; set; } = new(Color.White);

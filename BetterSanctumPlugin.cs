@@ -179,8 +179,12 @@ public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
                     foreach (var reward in rewards)
                     {
                         var currencyName = reward.room.CurrencyName;
-                        textSize = DrawTextWithBackground(currencyName, lineLocation, GetCurrencyColor(currencyName, reward.order), Settings.BackgroundColor);
-                        lineLocation.Y += textSize.Y;
+                        var tier = Settings.GetCurrencyTier(currencyName, reward.order);
+                        if (tier <= Settings.HideCurrencyBelowTier)
+                        {
+                            textSize = DrawTextWithBackground(currencyName, lineLocation, GetCurrencyColor(tier), Settings.BackgroundColor);
+                            lineLocation.Y += textSize.Y;
+                        }
                     }
                 }
 
@@ -221,7 +225,6 @@ public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
     }
 
     private Color GetAfflictionColor(string effectName) => GetAfflictionColor(Settings.GetAfflictionTier(effectName));
-    private Color GetCurrencyColor(string currencyName, int order) => GetCurrencyColor(Settings.GetCurrencyTier(currencyName, order));
     private Color GetRoomColor(string fightRoomId) => GetRoomColor(Settings.GetRoomTier(fightRoomId));
 
     private ColorNode GetAfflictionColor(int afflictionTier)

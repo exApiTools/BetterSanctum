@@ -241,6 +241,8 @@ public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
             1 => Settings.Tier1CurrencyColor,
             2 => Settings.Tier2CurrencyColor,
             3 => Settings.Tier3CurrencyColor,
+            4 => Settings.Tier4CurrencyColor,
+            5 => Settings.Tier5CurrencyColor,
         };
     }
 

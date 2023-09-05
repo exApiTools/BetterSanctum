@@ -32,10 +32,17 @@ public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
         if (!GameController.IngameState.IngameUi.GetChildAtIndex(pathToOfferWindowIndex).IsVisible)
             return;
 
-        var pathToOfferWindowRows = new int[] { pathToOfferWindowIndex, 0, 1, 0, 2 };
+        var pathToOfferWindowRows = new int[] { pathToOfferWindowIndex, 0, 1, 0, 1 };
         var sanctumOfferWindow = GameController.IngameState.IngameUi.GetChildFromIndices(pathToOfferWindowRows);
         if (!sanctumOfferWindow.IsVisible)
-            return;
+        {
+            sanctumOfferWindow = GameController.IngameState.IngameUi.GetChildFromIndices(new int[] { pathToOfferWindowIndex, 0, 1, 0, 2 });
+
+            if (!sanctumOfferWindow.IsVisible)
+            {
+                return;
+            }
+        }
 
          var dupOffer = sanctumOfferWindow.Children.Where(x => Settings.CurrencyDuplicate.Any(y => x.Children[1].Text.Contains(y)));
         var noDupOffer = sanctumOfferWindow.Children.Where(x => Settings.CurrencyDuplicate.Any(y => !x.Children[1].Text.Contains(y)));

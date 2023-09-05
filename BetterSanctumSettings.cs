@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ExileCore.Shared.Helpers;
@@ -47,6 +47,15 @@ public class BetterSanctumSettings : ISettings
         "Armourer's Scraps",
         "Orbs of Transmutation",
         "Orbs of Augmentation",
+    };
+
+    public readonly IReadOnlyList<string> CurrencyDuplicate = new List<string>
+    {
+        "Divine Orb",
+        "Divine Orbs",
+        "Mirror of kalandra",
+        "Mirror",
+        "Mirrors",
     };
 
     private static readonly IReadOnlyList<string> RoomTypes = new List<string>
@@ -260,6 +269,8 @@ public class BetterSanctumSettings : ISettings
         return GetCurrentProfile().profile.AfflictionTiers.GetValueOrDefault(type ?? "", 2);
     }
 
+
+
     public ToggleNode Enable { get; set; } = new ToggleNode(true);
 
     public ColorNode TextColor { get; set; } = new ColorNode(Color.White);
@@ -295,6 +306,8 @@ public class BetterSanctumSettings : ISettings
 
     [JsonIgnore]
     public CustomNode TieringNode { get; set; }
+
+    public ToggleNode DuplicateRun { get; set; } = new ToggleNode(false);
 }
 
 public class ProfileContent

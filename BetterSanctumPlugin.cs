@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ExileCore;
+using ExileCore.PoEMemory.MemoryObjects;
+using ExileCore.Shared.Enums;
 using ExileCore.Shared.Helpers;
 using ExileCore.Shared.Nodes;
 using ImGuiNET;
@@ -14,6 +16,7 @@ namespace BetterSanctum;
 public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
 {
     private readonly Stopwatch _sinceLastReloadStopwatch = Stopwatch.StartNew();
+    private Random rndColor = new Random();
 
     private Vector2 DrawTextWithBackground(string text, Vector2 position, Color color, Color backgroundColor)
     {
@@ -23,8 +26,54 @@ public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
         return textSize;
     }
 
+    private void PreventLastOffer()
+    {
+        var pathToOfferWindowIndex = 110; // sanctum Offer Window index
+        if (!GameController.IngameState.IngameUi.GetChildAtIndex(pathToOfferWindowIndex).IsVisible)
+            return;
+
+        var pathToOfferWindowRows = new int[] { pathToOfferWindowIndex, 0, 1, 0, 1 };
+        var sanctumOfferWindow = GameController.IngameState.IngameUi.GetChildFromIndices(pathToOfferWindowRows);
+        if (!sanctumOfferWindow.IsVisible)
+        {
+            sanctumOfferWindow = GameController.IngameState.IngameUi.GetChildFromIndices(new int[] { pathToOfferWindowIndex, 0, 1, 0, 2 });
+
+            if (!sanctumOfferWindow.IsVisible)
+            {
+                return;
+            }
+        }
+
+         var dupOffer = sanctumOfferWindow.Children.Where(x => Settings.CurrencyDuplicate.Any(y => x.Children[1].Text.Contains(y)));
+        var noDupOffer = sanctumOfferWindow.Children.Where(x => Settings.CurrencyDuplicate.Any(y => !x.Children[1].Text.Contains(y)));
+        var floorFinalChest = GameController.EntityListWrapper.ValidEntitiesByType[EntityType.Chest];
+
+        foreach (var offer in dupOffer)
+        {
+            Graphics.DrawFrame(offer.GetClientRect(), RandomUtil.NextColor(rndColor), 6);
+        }
+
+        
+        foreach (var offer in noDupOffer.Where(x => !dupOffer.Contains(x)))
+        {
+            if ((offer.IndexInParent == 2) || (GameController.Area.CurrentArea.Area.RawName == "SanctumCrypt" && (offer.IndexInParent == 2 || offer.IndexInParent == 1)
+                    || GameController.Area.CurrentArea.Area.RawName == "SanctumNave" && (offer.IndexInParent == 2 || offer.IndexInParent == 1) && floorFinalChest.FirstOrDefault<Entity>(x => x.Metadata.Contains("FloorFinalRewardChest")) != null ))
+                {
+                    Graphics.DrawLine(offer.Children[1].Parent.GetClientRect().TopLeft.ToVector2Num(), offer.Children[1].Parent.GetClientRect().BottomRight.ToVector2Num(), 4, Color.Red);
+                    Graphics.DrawLine(offer.Children[1].Parent.GetClientRect().TopRight.ToVector2Num(), offer.Children[1].Parent.GetClientRect().BottomLeft.ToVector2Num(), 4, Color.Red);
+                    Graphics.DrawFrame(offer.Children[1].Parent.GetClientRect(), Color.Red, 4);
+                }
+        }
+
+    }
+
     public override void Render()
     {
+        if (Settings.DuplicateRun)
+        {
+            PreventLastOffer();
+        }
+        
         var floorWindow = GameController.IngameState.IngameUi.SanctumFloorWindow;
         if (!floorWindow.IsVisible)
         {
@@ -222,6 +271,7 @@ public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
                 }
             }
         }
+
     }
 
     private Color GetAfflictionColor(string effectName) => GetAfflictionColor(Settings.GetAfflictionTier(effectName));

@@ -28,23 +28,23 @@ public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
 
     private void PreventLastOffer()
     {
-        var pathToOfferWindowIndex = 110; // sanctum Offer Window index
-        if (!GameController.IngameState.IngameUi.GetChildAtIndex(pathToOfferWindowIndex).IsVisible)
+        if (!GameController.IngameState.IngameUi.SanctumRewardWindow.IsVisible)
             return;
 
-        var pathToOfferWindowRows = new int[] { pathToOfferWindowIndex, 0, 1, 0, 1 };
-        var sanctumOfferWindow = GameController.IngameState.IngameUi.GetChildFromIndices(pathToOfferWindowRows);
+        var pathToOfferWindowRows = new int[] { 0, 1, 0, 1 };
+        var sanctumOfferWindow = GameController.IngameState.IngameUi.SanctumRewardWindow.GetChildFromIndices(pathToOfferWindowRows);
         if (!sanctumOfferWindow.IsVisible)
         {
-            sanctumOfferWindow = GameController.IngameState.IngameUi.GetChildFromIndices(new int[] { pathToOfferWindowIndex, 0, 1, 0, 2 });
+            sanctumOfferWindow = GameController.IngameState.IngameUi.SanctumRewardWindow.GetChildFromIndices(new int[] { 0, 1, 0, 2 });
 
             if (!sanctumOfferWindow.IsVisible)
             {
                 return;
             }
         }
+            
 
-         var dupOffer = sanctumOfferWindow.Children.Where(x => Settings.CurrencyDuplicate.Any(y => x.Children[1].Text.Contains(y)));
+        var dupOffer = sanctumOfferWindow.Children.Where(x => Settings.CurrencyDuplicate.Any(y => x.Children[1].Text.Contains(y)));
         var noDupOffer = sanctumOfferWindow.Children.Where(x => Settings.CurrencyDuplicate.Any(y => !x.Children[1].Text.Contains(y)));
         var floorFinalChest = GameController.EntityListWrapper.ValidEntitiesByType[EntityType.Chest];
 
@@ -52,7 +52,6 @@ public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
         {
             Graphics.DrawFrame(offer.GetClientRect(), RandomUtil.NextColor(rndColor), 6);
         }
-
         
         foreach (var offer in noDupOffer.Where(x => !dupOffer.Contains(x)))
         {
@@ -64,7 +63,6 @@ public class BetterSanctumPlugin : BaseSettingsPlugin<BetterSanctumSettings>
                     Graphics.DrawFrame(offer.Children[1].Parent.GetClientRect(), Color.Red, 4);
                 }
         }
-
     }
 
     public override void Render()
